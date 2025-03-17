@@ -18,4 +18,7 @@ python ./traffic_analysis.py digraph_file.gml  n initial final -- plot.
 - Here, digraph will be used for the analysis and the format is Graph Modeling Language (GML) which describes the digraph's structure with attributes.
 - This program should read attributes of the nodes and edges in the file and print out the number of drivers in each edge at btoh the nash equilibrium and social optimal.
 
-# 
+--plot
+# Finally, we plot the directed graph and the polynomials of every edge. 
+Examples:
+python ./traffic_analysis.py traffic.gml 4 0 3 --plot
