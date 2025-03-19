@@ -23,4 +23,5 @@ python ./traffic_analysis.py digraph_file.gml  n initial final -- plot.
 Examples:
 python ./traffic_analysis.py traffic.gml 4 0 3 --plot
 
-- When I ran this example on my machine, it gave me 4 vehicles, 0 as my start position and 3 as my end position. 
+- When I ran this example on my machine, it gave me 4 vehicles, 0 as my start position and 3 as my end position.
+- This gave me 4 nodes, a nash equilibrium, a social optima and values calculated for my traffic time. 
