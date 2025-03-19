@@ -20,8 +20,13 @@ python ./traffic_analysis.py digraph_file.gml  n initial final -- plot.
 
 --plot
 # Finally, we plot the directed graph and the polynomials of every edge. 
-Examples:
+Example 1:
 python ./traffic_analysis.py traffic.gml 4 0 3 --plot
 
 - When I ran this example on my machine, it gave me 4 vehicles, 0 as my start position and 3 as my end position.
-- This gave me 4 nodes, a nash equilibrium, a social optima and values calculated for my traffic time. 
+- This gave me 4 nodes, a nash equilibrium, a social optima and values calculated for my traffic time.
+
+Example 2:
+python ./traffic_analysis.py traffic2.gml 8 0 6 --plot
+- When I ran this example on my machine, it gave me 8 vehicles, 0 as my start position and 3 as my end position.
+- This gave me 5 nodes, a nash equlibirum, a social optima and values calculated for my traffic time. 
