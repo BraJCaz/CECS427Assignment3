@@ -15,17 +15,17 @@ def read_graph(file_path):
     Graph = nx.read_gml(file_path)
     return Graph
 
-# We will load our graph
+# We will load our graph after that
 def load_graph(file_path):
     """ We load a directed path from a GML file"""
-    Graph = nx.load_gml(file_path)
+    Graph = nx.read_gml(file_path)
     return Graph
 
 # Next, we generate a sample gml file
 def generate_sample_gml(filename="di_graph.gml"):
     """Generate a sample directed graph and save it as a GML file."""
     Graph = nx.DiGraph()  # Create a directed graph
-    # These are our sample nodes
+    # These are our sample nodes of both a and b based on our di_graph.gml file
     # first sample edge
     Graph.add_edge(0, 1, a=2.0, b=1.0)
     # second sample edge
@@ -33,17 +33,19 @@ def generate_sample_gml(filename="di_graph.gml"):
     # third sample edge
     Graph.add_edge(2, 0, a=1.5, b=0.5)
 
-    # We generate our sample GML file
+    # now, we write our gml graph file
     nx.write_gml(Graph, filename)
     print(f"Sample GML file '{filename}' generated.")
 
-    # Run this function to create a non-empty GML file
-    generate_sample_gml()
+# Then we run this function manually before running the script
+generate_sample_gml("digraph_file.gml")
 
 # This is our travel time
 def travel_time(Graph, flow):
     """ This computes total travel time for each edge given a flow distribution."""
+    # we compute our travel time
     time = {}
+    # we calculate our edges
     for edge in Graph.edges():
         # for edge a
         a = Graph[edge[0]][edge[1]]['a']
@@ -67,6 +69,7 @@ def nash_equilibrium(Graph, source, target, vehicles):
     # our initial guess
     initial_guess = np.full(len(edges), vehicles / len(edges))
 
+    # our objective function
     def objective(flow):
         return sum(compute_travel_cost(flow[i], edges[i][2].get('a', 1), edges[i][2].get('b', 1)) for i in range(len(edges)))
 
@@ -78,6 +81,7 @@ def nash_equilibrium(Graph, source, target, vehicles):
     # our result
     result = minimize(objective, initial_guess, bounds=bounds, constraints=constraints)
 
+    # we return our result
     return {edges[i][:2]: result.x[i] for i in range(len(edges))}
 
 # Next, we have our social optimum
@@ -87,6 +91,7 @@ def social_optimum(Graph, source, target, vehicles):
     # our initial guess
     initial_guess = np.full(len(edges), vehicles / len(edges))
 
+    # our objective function
     def objective(flow):
         return sum(flow[i] + compute_travel_cost(flow[i], edges[i][2].get('a', 1), edges[i][2].get('b', 1)) for i in range(len(edges)))
 
@@ -95,24 +100,29 @@ def social_optimum(Graph, source, target, vehicles):
     # our bounds
     bounds = [(0, vehicles) for _ in edges]
 
-
     # our result
     result = minimize(objective, initial_guess, bounds=bounds, constraints=constraints)
 
+    # we return our result
     return {edges[i][:2]: result.x[i] for i in range(len(edges))}
 
-# Now we're going to plot our graph and name it Traffic Network
+# Now, we're going to plot our graph and name it Traffic Network
 def plot_graph(Graph, flows, title="Traffic Network"):
     """This plots the directed graph with edge weights"""
+    # our position
     position = nx.spring_layout(Graph)
 
     plt.figure(figsize=(8, 10))
-    nx.draw(Graph, position, with_labels=True, node_color='lightblue', edge_color='gray')
-    edge_labels = {edge: f"{flows.get(edge, 0):2.f}" for edge in Graph.edges}
+    # we plot our graph
+    nx.draw(Graph, position, with_labels=True, node_color='lightblue', edge_color='black')
+    # we label our edges
+    edge_labels = {edge: f"{flows.get(edge, 0):.2f}" for edge in Graph.edges}
+    # this draws our edge labels
     nx.draw_networkx_edge_labels(Graph, position, edge_labels=edge_labels)
+    # our graph title
     plt.title(title)
+    # we show our graph
     plt.show()
-
 
 # Now, we write our main function
 def main():
@@ -133,32 +143,41 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    # these are our arguments 
-    args = parser.parse_args()
+    # we test these arguments to see if they work
+    try:
+        args = parser.parse_args()
 
-    print(f"Plot status: {args.plot}")  # Debugging
+        # Our output command
+        print(f"File: {args.file}, Vehicles: {args.vehicles}, Start: {args.start}, End: {args.end}, Plot: {args.plot}")
 
-    # This loads the graph 
+    # This lets us know if there are errors running our output arguments
+    except ValueError as e:
+        print(f"Error: {e}")
+        parser.print_help()
+        sys.exit(1)
+
+    # This loads the graph
     Graph = load_graph(args.file)
 
-    # our equilibirum flow
+    # our equilibrium flow
     equilibrium_flow = nash_equilibrium(Graph, args.start, args.end, args.vehicles)
     # our social flow
     social_flow = social_optimum(Graph, args.start, args.end, args.vehicles)
 
     # Nash Equilibrium
     print("Nash Equilibrium Flows:")
-    for edge, flow in equbilibrum_flow.items():
+    for edge, flow in equilibrium_flow.items():
         print(f"{edge}: {flow:.2f}")
 
     # Social Optimal
-    print("\n Social Optimal Flows:")
+    print("Social Optimal Flows:")
     for edge, flow in social_flow.items():
         print(f"{edge}: {flow:.2f}")
 
     # Now we plot both graphs all together
     if args.plot:
-        print("Plots are generated...") # For debugging
+        # This generates both graphs
+        print("Both graphs are generated...")
         # Our Nash Equilibrium is plotted
         plot_graph(Graph, equilibrium_flow, "Nash Equilibrium")
         # Our Social Optimality is plotted
